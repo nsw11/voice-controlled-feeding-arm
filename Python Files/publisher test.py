@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import queue
 import rospy
-from queue import Empty, Queue
 from std_msgs.msg import String
 
 def talker():
@@ -9,14 +8,14 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     curr = "stop"
-    q = Queue()
+    q = queue.SimpleQueue(maxsize=0)
     while not rospy.is_shutdown():
         """
         take voice input
         decode voice command
         place important commands into queue with q.put_nowait(item) where item is the item to put onto queue-> if you get stop, 
         clear queue then break from decode
-        e.g. q,put_nowait("stop")
+        e.g. q.put_nowait("stop")
         
         How to clear queue- copy this code, 
         while(not q.Empty()):
@@ -28,17 +27,12 @@ def talker():
             curr = "stop"
         else:
             curr = q.get()
-        
-        in_str = curr % rospy.get_time()  #replace with decoded voice command
+        in_str = curr % rospy.get_time()  
+        print(in_str)#test print remove later
         rospy.loginfo(in_str)
         pub.publish(in_str)
         rate.sleep()
-#For multiple commands
-#TODO
-#1. implement a queue
-#2. for every valid word, push to back of the queue
-#3. Every iteration take top of queue set current variable and send to ROS
-#4. if queue is empty, send current again
+
 
 
 
