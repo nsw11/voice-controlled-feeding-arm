@@ -11,6 +11,7 @@ def talker():
     q = queue.SimpleQueue(maxsize=0)
     while not rospy.is_shutdown():
         """
+        making a change to test commits
         take voice input
         decode voice command
         place important commands into queue with q.put_nowait(item) where item is the item to put onto queue-> if you get stop, 
