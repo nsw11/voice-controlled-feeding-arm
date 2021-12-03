@@ -62,7 +62,7 @@ def write_command_to_file(text, w_a):
     f.close()
 
 
-def main_loop():
+def main_loop():#you need to implement this in talker or main loop (ideally in talker for organization)
     stopnot = 1
 
     while stopnot == 1:
@@ -108,7 +108,7 @@ def talker():
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main__': #this is what is run in ROS all code needs to be called by this or something that is called in this
     try:
         talker()
     except rospy.ROSInterruptException:
