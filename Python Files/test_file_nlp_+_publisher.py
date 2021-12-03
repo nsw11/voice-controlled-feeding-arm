@@ -78,7 +78,7 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     curr = "stop"
-    q = queue.SimpleQueue(maxsize=0)
+    q = queue.SimpleQueue()
     while not rospy.is_shutdown():
         """
         making a change to test commits
