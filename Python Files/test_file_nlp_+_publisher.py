@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/env python
 import queue
 import rospy
@@ -7,7 +8,7 @@ import speech_recognition as sr
 
 r = sr.Recognizer()
 command_set = {"undefined",'up','down',"right","left","forward","back","start","stop","power on", "power off"}
-
+q = queue.SimpleQueue(maxsize=0)
 
 def get_speech_to_text():
     words = []
@@ -37,6 +38,7 @@ def get_speech_to_text():
 
 
 def command_interpretation():
+    global q
     stopnot = 1
     input_text = get_speech_to_text()
     temp_command_matrix = []
@@ -45,6 +47,7 @@ def command_interpretation():
         for recognized_command in command_set:
             if word == recognized_command:
                 temp_command_matrix.append(recognized_command)
+                q.put_nowait(recognized_command)
                 i = i+1
 
     print("Command Matrix: " + str(temp_command_matrix))
@@ -62,15 +65,14 @@ def write_command_to_file(text, w_a):
     f.close()
 
 
-def main_loop():#you need to implement this in talker or main loop (ideally in talker for organization)
-    stopnot = 1
-
-    while stopnot == 1:
-        command_matrix = command_interpretation()
-        for commands in command_matrix:
-            # exit criterion
-            if commands == 'stop':
-                stopnot = 0
+def nlp_loop():
+    global q
+    command_matrix = command_interpretation()
+    for commands in command_matrix:
+        # exit criterion
+        if commands == 'stop':
+            while not q.Empty():
+                q.get_nowait()
 
 
 def talker():
@@ -78,7 +80,7 @@ def talker():
     rospy.init_node('talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
     curr = "stop"
-    q = queue.SimpleQueue()
+
     while not rospy.is_shutdown():
         """
         making a change to test commits
@@ -93,8 +95,9 @@ def talker():
             q.get_nowait()
         """
         #Check if queue is empty, if it is- set curr to stop, if it isn't set it to next element in queue
-        item = command_interpretation()
-        q.put_nowait(item)
+
+        nlp_loop() # process the next audio input -> variable time function
+
         if (q.empty()):
             curr = "stop"
         else:
@@ -108,7 +111,7 @@ def talker():
 
 
 
-if __name__ == '__main__': #this is what is run in ROS all code needs to be called by this or something that is called in this
+if __name__ == '__main__':
     try:
         talker()
     except rospy.ROSInterruptException:
