@@ -7,7 +7,7 @@ from std_msgs.msg import String
 import speech_recognition as sr
 
 r = sr.Recognizer()
-command_set = {"undefined",'up','down',"right","left","forward","back","start","stop","power on", "power off"}
+command_set = {"undefined",'up','down',"right","left","forward","back","set","stop","power on", "power off"}
 q = queue.SimpleQueue(maxsize=0)
 
 def get_speech_to_text():
